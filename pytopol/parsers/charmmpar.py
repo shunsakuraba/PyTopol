@@ -211,8 +211,11 @@ class CharmmPar(object):
         _curr_par      = None
 
         cm_lines = [] # for caching CMAP lines
+        continuation = None
 
         for ln, line in enumerate(_lines):
+            if continuation:
+                line = continuation + line
             if '!' in line:
                 line = line[0: line.index('!')]
             line = line.strip()
@@ -220,7 +223,12 @@ class CharmmPar(object):
             if line == '':
                 continue
 
-            elif line=='END' or line=='end':
+            if line.endswith('-'):
+                continuation = line[0:-1] + " "
+                continue
+            continuation = None
+
+            if line=='END' or line=='end':
                 break
 
             elif line.startswith('*'):
